@@ -1,7 +1,5 @@
 package test.divers;
 
-import main.java.model.Configuration;
-
 public class TestRandom {
 
 	public TestRandom() {

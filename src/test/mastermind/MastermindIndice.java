@@ -1,9 +1,9 @@
 package test.mastermind;
 
-import java.util.ArrayList;
-
 import classesNeccessaires.Configuration;
 import classesNeccessaires.Partie;
+
+import java.util.ArrayList;
 
 public class MastermindIndice {
 

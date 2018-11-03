@@ -1,35 +1,17 @@
 package test.divers;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
+import classesNeccessaires.Configuration;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.logging.LogManager;
 import java.util.regex.Pattern;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 
-import com.sun.javafx.logging.Logger;
-
-import classesNeccessaires.Configuration;
-import javafx.beans.Observable;
-import main.java.observer.Observateur;
-
-
-public class TestCarac extends JDialog implements Observable {
+public class TestCarac extends JDialog {
 	private static final long serialVersionUID = -1975827366674767282L;
-	private static final Logger logger = LogManager.getLogger();
-	protected ArrayList<Observateur> listObservateur = new ArrayList<Observateur>();
+
 	private JPanel content;
 	private JLabel jlSigne;
 	private Configuration config;
@@ -37,11 +19,10 @@ public class TestCarac extends JDialog implements Observable {
 	private boolean isOkData;
 	private int nbreChiffre, combi;
 
-	public TestCarac(JFrame parent, String title, boolean modal, Configuration config, Observateur obs) {
+	public TestCarac(JFrame parent, String title, boolean modal, Configuration config) {
 		super(parent, title, modal);
 		this.config =config;
 		nbreChiffre = config.getCombiPlusMoins();
-		this.addObservateur(obs);
 		this.setSize(600, 160);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
@@ -79,7 +60,7 @@ public class TestCarac extends JDialog implements Observable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private void acurateData() {
 		isOkData = true;
@@ -98,7 +79,6 @@ public class TestCarac extends JDialog implements Observable {
 		}
 		else {
 			System.out.println(comb);
-			logger.debug("la combinaison : "+combi);
 			isOkData = true;
 		}
 	}
@@ -109,13 +89,7 @@ public class TestCarac extends JDialog implements Observable {
 			//- ferme la fenetre lorsque les données sont bonnes
 			if (isOkData) {
 				setVisible(false);
-				updateObservateur();
-				logger.debug("indice verifié et envoie au controller");
-			}	
+			}
 		}
 	}
-
-	public void addObservateur(Observateur obs) {}
-	public void updateObservateur() {}
-	public void delObservateur() {}
 }

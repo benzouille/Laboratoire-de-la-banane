@@ -1,21 +1,12 @@
 package test.mastermind;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import classesNeccessaires.Balle;
 import classesNeccessaires.TypeCouleur;
-import fr.lazarus.view.game.plusMoins.GamePanelPlusMoins;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class TestAnim extends JFrame {
 
@@ -75,7 +66,7 @@ public class TestAnim extends JFrame {
 	
 	/**
 	 * Mettre à jour le focus du second panneau de jeu via un Thread Indépendant.
-	 * @param jpTarget
+	 * @param jpAffichage
 	 */
 	public static void updateAnim(JPanel jpAffichage) {
 		new Thread(new Runnable() {
