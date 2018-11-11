@@ -63,7 +63,6 @@ public class MastermindProposition {
         /* Formattage de l'indice */
         indice = stringToList(indices);
         tailleIndice = indice.size();
-        //monoChrome(-1);
         noirIgnore(nbreVerrou());
         lecteurIndice();
 
@@ -82,7 +81,7 @@ public class MastermindProposition {
         /* verifie que les conditions de victoire soient bien réunis */
         if(victoire()){
             tour++;
-            //TODO ajout de quoi faire en cas de vicroire.
+            //TODO ajout de quoi faire en cas de victoire.
             String str = "Victoire";
             System.out.println(str);
             return str;
@@ -97,7 +96,6 @@ public class MastermindProposition {
             tour++;
             return listToString(proposition);
         }
-        /* indice non vide */
 
         /* Si la derniere action est un monoChrome() */
         if(derniereAction.equals("monoChrome")){
@@ -117,17 +115,12 @@ public class MastermindProposition {
             return listToString(proposition);
         }
         /* Si la derniere action est un biChrome() */
+
         /* Si pas de blanc */
         if(nbreBlanc == 0) {
             /* Si 1 noir */
             if (nbreNoir == 1) {
-                    /*
-	                   ajouter dans la liste la couleur*nombre de noir présent dans l'indice apres le noirIgnore() fait.
-	        		   faire un biChrome jusqu'a trouver 1 noir de nouveau le verrouiller
-	                   Si après biChrome indice ne contiens pas de blanc la couleur 1 est verrouillé
-                     */
-
-                //couleur bonne -> verrouillage et la couleur va à la poubelle
+                //couleur bonne -> verrouillage et la couleur va à la poubelle, couleur2 absente => poubelle, monoChrome(couleur 0).
 
                 ajoutAuVerrou(positionCouleur1, couleur.get(0));
                 verrouille();
@@ -137,7 +130,7 @@ public class MastermindProposition {
             }
             /* Si plusieurs noirs */
             else if (nbreNoir > 1) {
-                //couleur1 bonne position bonne -> couleur1 verrouillage puis poubelle, biChrome couleur2
+                //couleur1 bonne position bonne -> couleur1 verrouillage puis poubelle, biChrome couleur2.
                 ajoutAuVerrou(positionCouleur1, couleur.get(0));
                 verrouille();
                 //TODO voir la position couleur mal placé
@@ -146,7 +139,6 @@ public class MastermindProposition {
                 positionCouleur1 = 0;
                 biChrome(couleur.get(0),positionCouleur1,couleur.get(1));
             }
-            /* On ajoute un tour et on retourne la proposition en un string */
             tour++;
             return listToString(proposition);
         }
@@ -154,44 +146,37 @@ public class MastermindProposition {
         if (nbreNoir == 0) {
             /* Si 1 blanc */
             if (nbreBlanc == 1) {
-                //couleur bonne, position mauvaise -> bichrome position +1, et couleur2 poubelle
+                //couleur bonne, position mauvaise -> bichrome position +1, et couleur2 poubelle, biChrome()
+
                 aLaPoubelle(1);
                 positionCouleur1++;
                 biChrome(couleur.get(0),positionCouleur1,couleur.get(1));
             }
             /* Si plusieurs blancs */
             else if (nbreBlanc == 2) {
-                    /*
-                    couleur1 bonne, position mauvaise
-                    La couleur 2 ne peux etre que à la place de la couleur 1
-                     */
+                    //couleur1 bonne, position mauvaise La couleur 2 ne peux etre que à la place de la couleur 1
 
                 ajoutAuVerrou(positionCouleur1, couleur.get(1));
                 verrouille();
                 aLaPoubelle(1);
-
                 biChrome(couleur.get(0), positionCouleur1, couleur.get(1));
             }
-            /* On ajoute un tour et on retourne la proposition en un string */
             tour++;
             return listToString(proposition);
         }
 
         if (nbreNoir == 1 || nbreBlanc == 1){
             //rien a la poubelle couleur 1 présente à la mauvaise place couleur 2 présente, positionCouleur++ faire un biChrome avec les deux meme couleurs
-            positionCouleur1++;
 
+            positionCouleur1++;
             biChrome(couleur.get(0), positionCouleur1, couleur.get(1));
 
         }
         else if (nbreNoir > 1 || nbreBlanc > 1){
-            // rien à la poubelle que faire ?
             //couleur1 présente mauvaise place et couleur2 présente : positionCouleur1++; biChrome(couleur1, positionCouleur1, couleur2);
             positionCouleur1++;
             biChrome(couleur.get(0), positionCouleur1, couleur.get(1));
         }
-
-        /* On ajoute un tour et on retourne la proposition en un string */
         tour++;
         return listToString(proposition);
     }
@@ -238,6 +223,7 @@ public class MastermindProposition {
 
     /**
      * Retourne un string rempli de la couleur donnée au emplacement dont la valeur est -1
+     * Modifie le String derniereAction en monoChrome si le paramètre d'entrée est différent de -1.
      * @param couleur int
      */
     private void monoChrome(int couleur) {
@@ -246,14 +232,13 @@ public class MastermindProposition {
                 proposition.set(i, couleur);
             }
         }
-        //TODO ici pas sur que la condition soit bonne
         if(!(couleur == -1)) {
             derniereAction = "monoChrome";
         }
     }
 
     /**
-     * Place couleur1 à la position si la position et remplie le reste avec la couleur2
+     * Place couleur1 à l'index donnée si l'index n'est pas déjà occupé par une couleur verrouillé et remplie le reste avec la couleur2.
      * @param couleur1 int
      * @param positionCouleur1 int
      * @param couleur2 int
@@ -268,7 +253,7 @@ public class MastermindProposition {
     }
 
     /**
-     * Verouille la couleur dans la position de la proposition appel les methodes noirIgnore() et nbreVerrou().
+     * Verouille la couleur dans l'index de la proposition si il n'est pas déjà occupé
      * @param index int.
      * @param chiffre int.
      */
@@ -317,7 +302,7 @@ public class MastermindProposition {
     }
 
     /**
-     * Verifie que la longueur du string indices correspond à tailleCombinaison puis verifie que l'integralité du string ne sont que des 1
+     * Verifie que la longueur du string indices correspond à tailleCombinaison puis verifie que l'integralité du string ne soit que des 1.
      * @return boolean
      */
     private boolean victoire() {
