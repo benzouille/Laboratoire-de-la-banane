@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class MastermindProposition {
 
-    //TODO remplacer les  par couleur.get(0) | remplir les interprètations des indices | finaliser la proposition et ordonner les methodes pour faire une proposition cohérante
     //TODO positionCouleur1 ne doit pas être sur les index du verrou
     private String indices, derniereAction;
     private int tour = 1;
@@ -64,7 +63,7 @@ public class MastermindProposition {
         /* Formattage de l'indice */
         indice = stringToList(indices);
         tailleIndice = indice.size();
-        monoChrome(-1);
+        //monoChrome(-1);
         noirIgnore(nbreVerrou());
         lecteurIndice();
 
@@ -80,8 +79,18 @@ public class MastermindProposition {
          ********************************
          */
 
+        /* verifie que les conditions de victoire soient bien réunis */
+        if(victoire()){
+            tour++;
+            //TODO ajout de quoi faire en cas de vicroire.
+            String str = "Victoire";
+            System.out.println(str);
+            return str;
+        }
+
+
         /* verifie si l'indice modifié par noirIgnore() est vide */
-        if(indices.isEmpty()) {
+        if(nbreBlanc == 0 && nbreNoir == 0) {
             aLaPoubelle(0);
             monoChrome(couleur.get(0));
             /* On ajoute un tour et on retourne la proposition en un string */
@@ -102,14 +111,14 @@ public class MastermindProposition {
                 /* le nombre de noir -1 donne le nombre de fois la couleur à ajouter à l'arrayList couleur */
                 positionCouleur1 = 0;
                 biChrome(couleur.get(0),positionCouleur1,couleur.get(1));
-                ajoutCouleur(nbreNoir, couleur.get(0));
+                ajoutCouleur(nbreNoir-1, couleur.get(0));
             }
             tour++;
             return listToString(proposition);
         }
         /* Si la derniere action est un biChrome() */
         /* Si pas de blanc */
-        if(nbreBlanc ==0) {
+        if(nbreBlanc == 0) {
             /* Si 1 noir */
             if (nbreNoir == 1) {
                     /*
@@ -131,8 +140,9 @@ public class MastermindProposition {
                 //couleur1 bonne position bonne -> couleur1 verrouillage puis poubelle, biChrome couleur2
                 ajoutAuVerrou(positionCouleur1, couleur.get(0));
                 verrouille();
-                ajoutCouleur(nbreNoir, couleur.get(0));
+                //TODO voir la position couleur mal placé
                 aLaPoubelle(0);
+                ajoutCouleur(nbreNoir, couleur.get(0));
                 positionCouleur1 = 0;
                 biChrome(couleur.get(0),positionCouleur1,couleur.get(1));
             }
@@ -155,15 +165,23 @@ public class MastermindProposition {
                     couleur1 bonne, position mauvaise
                     La couleur 2 ne peux etre que à la place de la couleur 1
                      */
+
                 ajoutAuVerrou(positionCouleur1, couleur.get(1));
                 verrouille();
                 aLaPoubelle(1);
-                positionCouleur1++;
+
                 biChrome(couleur.get(0), positionCouleur1, couleur.get(1));
             }
+            /* On ajoute un tour et on retourne la proposition en un string */
+            tour++;
+            return listToString(proposition);
         }
-        else if (nbreNoir == 1 || nbreBlanc == 1){
-            //rien a la poubelle couleur 1 à la mauvaise place couleur 2 présente, positionCouleur++ faire un biChrome avec les deux meme couleurs
+
+        if (nbreNoir == 1 || nbreBlanc == 1){
+            //rien a la poubelle couleur 1 présente à la mauvaise place couleur 2 présente, positionCouleur++ faire un biChrome avec les deux meme couleurs
+            positionCouleur1++;
+
+            biChrome(couleur.get(0), positionCouleur1, couleur.get(1));
 
         }
         else if (nbreNoir > 1 || nbreBlanc > 1){
@@ -214,7 +232,7 @@ public class MastermindProposition {
      */
     private void ajoutCouleur(int nbreAjout, int color){
         for(int i = 0; i<nbreAjout; i++) {
-            couleur.add(1, color);
+            couleur.add(couleur.size(), color);
         }
     }
 
@@ -228,21 +246,22 @@ public class MastermindProposition {
                 proposition.set(i, couleur);
             }
         }
+        //TODO ici pas sur que la condition soit bonne
         if(!(couleur == -1)) {
             derniereAction = "monoChrome";
         }
     }
 
     /**
-     * Place couleur1 à la position et remplie le reste avec la couleur2
+     * Place couleur1 à la position si la position et remplie le reste avec la couleur2
      * @param couleur1 int
      * @param positionCouleur1 int
      * @param couleur2 int
      */
     private void biChrome(int couleur1, int positionCouleur1, int couleur2) {
-        int a = 0;
+        int a = positionCouleur1;
         int ajout =0;
-        while(verrou.get(a++) != -1){ ajout++; }
+        while(verrou.get(a++) != valeurDefaut){ ajout++; }
         proposition.set(positionCouleur1+ajout, couleur1);
         monoChrome(couleur2);
         derniereAction = "biChrome";
@@ -254,10 +273,11 @@ public class MastermindProposition {
      * @param chiffre int.
      */
     private void ajoutAuVerrou(int index, int chiffre) {
-        verrou.set(index, chiffre);
-        //TODO doute sur le noirIgnore() ici a verifier lors de la phase de test
-        //noirIgnore(nbreVerrou());
-
+        int a = index;
+        int ajout =0;
+        //TODO verifier risque de problème avec un écrasement dans le verrou sur un verrou déjà crée.
+        while(verrou.get(a++) != -1){ ajout++; }
+        verrou.set(index+ajout, chiffre);
     }
 
     /**
@@ -267,7 +287,6 @@ public class MastermindProposition {
     private void verrouille() {
         for(int i = 0; i < tailleCombinaison ; i++) {
             if (verrou.get(i) != valeurDefaut) {
-                //System.out.println("verouillage() insertion de la couleur " + verrou.get(i) + " A l'index " + i);
                 System.out.println("le verrou : " + getVerrou());
                 proposition.set(i, verrou.get(i));
             }
@@ -298,17 +317,22 @@ public class MastermindProposition {
     }
 
     /**
-     * Compare la liste verrouillée et la solution et retourne un true si identique.
+     * Verifie que la longueur du string indices correspond à tailleCombinaison puis verifie que l'integralité du string ne sont que des 1
+     * @return boolean
      */
-    private boolean comparaison() {
-        if (verrou == solution) {
-            System.out.println("comparaison() : " + verrou + "|" + solution + " égalité entre verrou et solution");
-            return true;
+    private boolean victoire() {
+        boolean b = false;
+        if (indices.length() == tailleCombinaison) {
+            for (int i = 0; i < tailleCombinaison; i++) {
+                if (Character.getNumericValue(indices.charAt(i)) == 1) {
+                    b = true;
+                }
+                else {
+                    b = false;
+                }
+            }
         }
-        else {
-            System.out.println("comparaison() : " + verrou + "|" + solution + " difference entre verrou et solution");
-            return false;
-        }
+        return b;
     }
 
     /**
@@ -355,28 +379,34 @@ public class MastermindProposition {
 
     public static void main(String[] args) {
         MastermindProposition test = new MastermindProposition();
-        test.setSolution("5404");
+        test.setSolution("5011");
         test.setIndices("");
         System.out.println("la solution : " + test.getSolution());
         test.initProposition();
         System.out.println("tour : " + test.getTour() + " verifie l'init : " + test.getProposition());
+
         test.setIndices("1");
-        test.proposition(test.getIndices());
-        System.out.println("tour : " + test.getTour() + " proposition : " + test.getProposition());
-        test.setIndices("2");
-        test.proposition(test.getIndices());
-        System.out.println("tour : " + test.getTour() + " proposition : " + test.getProposition());
-        test.setIndices("2");
-        test.proposition(test.getIndices());
-        System.out.println("tour : " + test.getTour() + " proposition : " + test.getProposition());
-        test.setIndices("1");
-        test.proposition(test.getIndices());
-        System.out.println("tour : " + test.getTour() + " proposition : " + test.getProposition());
+        System.out.println("tour : " + test.getTour() + " proposition : " + test.proposition(test.getIndices()));
+
+        test.setIndices("211");
+        System.out.println("tour : " + test.getTour() + " proposition : " + test.proposition(test.getIndices()));
+
         test.setIndices("111");
-        test.proposition(test.getIndices());
-        System.out.println("tour : " + test.getTour() + " proposition : " + test.getProposition());
-        test.setIndices("221");
-        test.proposition(test.getIndices());
-        System.out.println("tour : " + test.getTour() + " proposition : " + test.getProposition());
+        System.out.println("tour : " + test.getTour() + " proposition : " + test.proposition(test.getIndices()));
+
+        test.setIndices("12");
+        System.out.println("tour : " + test.getTour() + " proposition : " + test.proposition(test.getIndices()));
+
+        test.setIndices("11");
+        System.out.println("tour : " + test.getTour() + " proposition : " + test.proposition(test.getIndices()));
+
+        test.setIndices("11");
+        System.out.println("tour : " + test.getTour() + " proposition : " + test.proposition(test.getIndices()));
+
+        test.setIndices("111");
+        System.out.println("tour : " + test.getTour() + " proposition : " + test.proposition(test.getIndices()));
+
+        test.setIndices("1111");
+        System.out.println("tour : " + test.getTour() + " proposition : " + test.proposition(test.getIndices()));
     }
 }
